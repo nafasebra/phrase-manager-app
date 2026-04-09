@@ -4,11 +4,13 @@ from database import Database
 from ui.add_dialog import PhraseDialog
 from ui.font_manager import AppFonts
 
+from ui.export_import_dialog import ExportImportDialog
+
 class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.db = Database()
-        self.title("📝 Phrase Manager")
+        self.title("Phrase Manager")
         self.geometry("900x600")
         self.minsize(700, 450)
 
@@ -36,6 +38,15 @@ class MainWindow(ctk.CTk):
 
         ctk.CTkButton(top_bar, text="+ افزودن", font=AppFonts.bold(13),
                       command=self._open_add).pack(side="right")
+
+        # export / import button
+        ctk.CTkButton(
+            top_bar, text="⬆⬇ Export/Import",
+            font=AppFonts.bold(13),
+            fg_color="gray", hover_color="#555",
+            command=self._open_export_import
+        ).pack(side="right", padx=(0, 6))
+
 
         # لیست phrase ها
         self.scroll_frame = ctk.CTkScrollableFrame(main)
@@ -135,7 +146,7 @@ class MainWindow(ctk.CTk):
 
     def _copy(self, phrase):
         pyperclip.copy(phrase.content)
-        self.status_label.configure(text=f"✅ '{phrase.title}' کپی شد!")
+        self.status_label.configure(text=f"'{phrase.title}' کپی شد!")
         self.after(3000, lambda: self.status_label.configure(
             text=f"{len(self.db.get_all())} phrase"
         ))
@@ -155,6 +166,9 @@ class MainWindow(ctk.CTk):
         if name and name.strip():
             self.db.add_category(name.strip())
             self._refresh()
+
+    def _open_export_import(self):
+        ExportImportDialog(self, self.db, on_done=self._refresh)
 
     def on_close(self):
         self.db.close()

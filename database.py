@@ -92,5 +92,81 @@ class Database:
         )
         self.conn.commit()
 
+
+    # در انتهای کلاس Database، قبل از close()
+
+    def export_to_json(self, path: str) -> int:
+        """همه phrase ها رو به JSON export می‌کنه. تعداد export شده رو برمی‌گردونه."""
+        import json
+        phrases = self.get_all()
+        data = {
+            "version": 1,
+            "exported_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "phrases": [
+                {
+                    "title":      p.title,
+                    "content":    p.content,
+                    "category":   p.category,
+                    "tags":       p.tags,
+                    "created_at": p.created_at,
+                    "updated_at": p.updated_at,
+                }
+                for p in phrases
+            ]
+        }
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return len(phrases)
+
+    def import_from_json(self, path: str, overwrite: bool = False) -> dict:
+        """
+        از JSON import می‌کنه.
+        overwrite=True → همه داده‌های فعلی پاک میشن.
+        برمی‌گردونه: {"imported": int, "skipped": int, "errors": list[str]}
+        """
+        import json
+        result = {"imported": 0, "skipped": 0, "errors": []}
+
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # پشتیبانی از هر دو فرمت: لیست مستقیم یا آبجکت با کلید phrases
+        items = data if isinstance(data, list) else data.get("phrases", [])
+
+        if overwrite:
+            self.conn.execute("DELETE FROM phrases")
+            self.conn.commit()
+
+        for i, item in enumerate(items):
+            try:
+                if not item.get("title") or not item.get("content"):
+                    result["skipped"] += 1
+                    continue
+
+                # دسته‌بندی رو اگه وجود نداشت اضافه کن
+                cat = item.get("category", "عمومی")
+                self.add_category(cat)
+
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self.conn.execute(
+                    """INSERT INTO phrases (title, content, category, tags, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)""",
+                    (
+                        item["title"],
+                        item["content"],
+                        cat,
+                        item.get("tags", ""),
+                        item.get("created_at", now),
+                        item.get("updated_at", now),
+                    )
+                )
+                result["imported"] += 1
+            except Exception as e:
+                result["errors"].append(f"ردیف {i+1}: {e}")
+
+        self.conn.commit()
+        return result
+
+
     def close(self):
         self.conn.close()
