@@ -2,6 +2,7 @@ import customtkinter as ctk
 import pyperclip
 from database import Database
 from ui.add_dialog import PhraseDialog
+from ui.font_manager import AppFonts
 
 class MainWindow(ctk.CTk):
     def __init__(self):
@@ -33,7 +34,7 @@ class MainWindow(ctk.CTk):
         ctk.CTkEntry(top_bar, textvariable=self.search_var,
                      placeholder_text="🔍 جستجو...", width=300).pack(side="left")
 
-        ctk.CTkButton(top_bar, text="+ افزودن",
+        ctk.CTkButton(top_bar, text="+ افزودن", font=AppFonts.bold(13),
                       command=self._open_add).pack(side="right")
 
         # لیست phrase ها
@@ -52,7 +53,7 @@ class MainWindow(ctk.CTk):
             ctk.CTkLabel(
                 self.scroll_frame,
                 text="هیچ phrase ای یافت نشد 🕵️",
-                text_color="gray", font=("", 14)
+                text_color="gray", font=AppFonts.regular(13)
             ).pack(pady=40)
             return
 
@@ -69,13 +70,13 @@ class MainWindow(ctk.CTk):
 
         ctk.CTkLabel(
             top, text=phrase.title,
-            font=("", 13, "bold")
+            font=AppFonts.regular(13)
         ).pack(side="left")
 
         ctk.CTkLabel(
             top,
             text=f"[{phrase.category}]",
-            text_color="gray", font=("", 11)
+            text_color="gray", font=AppFonts.regular(13)
         ).pack(side="left", padx=8)
 
         # دکمه‌های عملیات
@@ -83,17 +84,17 @@ class MainWindow(ctk.CTk):
         btn_frame.pack(side="right")
 
         ctk.CTkButton(
-            btn_frame, text="📋 کپی", width=70,
+            btn_frame, text="کپی", width=70, font=AppFonts.bold(13),
             command=lambda p=phrase: self._copy(p)
         ).pack(side="left", padx=3)
 
         ctk.CTkButton(
-            btn_frame, text="✏️ ویرایش", width=80,
+            btn_frame, text="✏️ ویرایش", width=80, font=AppFonts.bold(13),
             command=lambda p=phrase: self._open_edit(p)
         ).pack(side="left", padx=3)
 
         ctk.CTkButton(
-            btn_frame, text="🗑 حذف", width=70,
+            btn_frame, text="🗑 حذف", width=70, font=AppFonts.bold(13),
             fg_color="#c0392b", hover_color="#e74c3c",
             command=lambda p=phrase: self._delete(p)
         ).pack(side="left", padx=3)
@@ -110,7 +111,7 @@ class MainWindow(ctk.CTk):
             tags_text = "  ".join(f"#{t.strip()}" for t in phrase.tags.split(",") if t.strip())
             ctk.CTkLabel(
                 card, text=tags_text,
-                text_color="#3498db", font=("", 10)
+                text_color="#3498db", font=AppFonts.regular(13)
             ).pack(anchor="w", padx=10, pady=(0, 8))
 
     # ─── Actions ─────────────────────────────────────────
