@@ -8,18 +8,18 @@ FONTS_DIR = Path(__file__).parent.parent / "assets" / "fonts"
 def load_font(font_path: str | Path) -> str:
     font_path = Path(font_path)
     if not font_path.exists():
-        raise FileNotFoundError(f"فونت پیدا نشد: {font_path}")
+        raise FileNotFoundError(f"Font not found: {font_path}")
 
-    # لود فونت در tkinter
+    # Load font in tkinter
     _load_platform(font_path)
 
-    # اسم فونت رو از فایل بخون
+    # Read font name from file
     name = _get_font_name(font_path)
     return name
 
 
 def _load_platform(font_path: Path):
-    """لود فونت بر اساس سیستم‌عامل"""
+    """Load font based on operating system"""
     import platform
     system = platform.system()
 
@@ -32,19 +32,19 @@ def _load_platform(font_path: Path):
         subprocess.run(["cp", str(font_path),
                         Path.home() / "Library/Fonts/"], check=False)
 
-    # لینوکس و fallback — tkinter مستقیم لود میکنه
-    # از طریق pyglet یا روش زیر:
+    # Linux and fallback — tkinter loads directly
+    # Via pyglet or method below:
     try:
         import pyglet
         pyglet.font.add_file(str(font_path))
     except ImportError:
-        pass  # اگه pyglet نبود مشکلی نیست
+        pass  # No problem if pyglet is not available
 
 
 def _get_font_name(font_path: Path) -> str:
-    """اسم فونت رو از فایل TTF میخونه"""
+    """Read font name from TTF file"""
     try:
-        # روش اول: با fonttools
+        # First method: with fonttools
         from fontTools.ttLib import TTFont
         tt = TTFont(str(font_path))
         name_table = tt["name"]
@@ -54,7 +54,7 @@ def _get_font_name(font_path: Path) -> str:
     except ImportError:
         pass
 
-    # روش دوم: اسم فایل رو به عنوان نام فونت استفاده کن
+    # Second method: use file name as font name
     return font_path.stem
 
 
@@ -68,9 +68,9 @@ class AppFonts:
             return
         try:
             cls.family = load_font(font_path)
-            print(f"✅ فونت لود شد: {cls.family}")
+            print(f"✅ Font loaded: {cls.family}")
         except Exception as e:
-            print(f"⚠ فونت لود نشد، از فونت پیش‌فرض استفاده میشه: {e}")
+            print(f"⚠ Font not loaded, using default font: {e}")
         cls._initialized = True
 
     @classmethod
@@ -84,4 +84,3 @@ class AppFonts:
     @classmethod
     def regular(cls, size: int = 13) -> ctk.CTkFont:
         return cls.get(size=size, weight="bold")
-

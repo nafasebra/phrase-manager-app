@@ -9,7 +9,7 @@ class PhraseDialog(ctk.CTkToplevel):
         self.phrase = phrase or Phrase.empty()
         self.on_save = on_save
 
-        title = "ویرایش Phrase" if phrase else "افزودن Phrase جدید"
+        title = "Edit Phrase" if phrase else "Add New Phrase"
         self.title(title)
         self.geometry("500x480")
         self.resizable(False, False)
@@ -26,20 +26,20 @@ class PhraseDialog(ctk.CTkToplevel):
         scroll = ctk.CTkScrollableFrame(self)
         scroll.pack(fill="both", expand=True)
 
-        ctk.CTkLabel(scroll, text="عنوان:", font=AppFonts.get(13)).pack(anchor="e", **pad)
-        self.entry_title = ctk.CTkEntry(scroll, width=440, placeholder_text="عنوان phrase...", font=AppFonts.get(13))
+        ctk.CTkLabel(scroll, text="Title:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        self.entry_title = ctk.CTkEntry(scroll, width=440, placeholder_text="Phrase title...", font=AppFonts.get(13))
         self.entry_title.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="دسته‌بندی:", font=AppFonts.get(13)).pack(anchor="e", **pad)
-        categories = [c for c in self.db.get_categories() if c != "همه"]
+        ctk.CTkLabel(scroll, text="Category:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        categories = [c for c in self.db.get_categories() if c != "All"]
         self.combo_cat = ctk.CTkComboBox(scroll, values=categories, width=440, font=AppFonts.get(13))
         self.combo_cat.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="تگ‌ها (با کاما جدا کنید):", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Tags (comma separated):", font=AppFonts.get(13)).pack(anchor="e", **pad)
         self.entry_tags = ctk.CTkEntry(scroll, width=440, placeholder_text="python, snippet, ...", font=AppFonts.get(13))
         self.entry_tags.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="محتوا:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Content:", font=AppFonts.get(13)).pack(anchor="e", **pad)
         self.text_content = ctk.CTkTextbox(scroll, width=440, height=150, font=AppFonts.get(13))
         self.text_content.pack(**pad)
 
@@ -49,8 +49,8 @@ class PhraseDialog(ctk.CTkToplevel):
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(side="bottom", pady=12)
 
-        ctk.CTkButton(btn_frame, text="ذخیره", width=120, font=AppFonts.bold(13), command=self._save).pack(side="left", padx=10)
-        ctk.CTkButton(btn_frame, text="انصراف", width=120, font=AppFonts.get(13), fg_color="gray", command=self.destroy).pack(side="left", padx=10)
+        ctk.CTkButton(btn_frame, text="Save", width=120, font=AppFonts.bold(13), command=self._save).pack(side="left", padx=10)
+        ctk.CTkButton(btn_frame, text="Cancel", width=120, font=AppFonts.get(13), fg_color="gray", command=self.destroy).pack(side="left", padx=10)
 
     def _load_phrase(self):
         self.entry_title.insert(0, self.phrase.title)
@@ -63,7 +63,7 @@ class PhraseDialog(ctk.CTkToplevel):
         content = self.text_content.get("1.0", "end").strip()
 
         if not title or not content:
-            self.error_label.configure(text="⚠ عنوان و محتوا اجباری هستند")
+            self.error_label.configure(text="Title and content are required")
             return
 
         self.error_label.configure(text="")

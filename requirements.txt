@@ -1,4 +1,5 @@
 customtkinter==5.2.2
 darkdetect==0.8.0
+fonttools==4.62.1
 packaging==26.0
 pyperclip==1.11.0

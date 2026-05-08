@@ -16,12 +16,12 @@ class ExportImportDialog(ctk.CTkToplevel):
 
     def _build_ui(self):
         ctk.CTkLabel(
-            self, text="Export / Import داده‌ها",
+            self, text="Export / Import Data",
             font=AppFonts.bold(15)
         ).pack(pady=(20, 4))
 
         ctk.CTkLabel(
-            self, text="فرمت پشتیبانی‌شده: JSON",
+            self, text="Supported format: JSON",
             text_color="gray", font=AppFonts.regular(12)
         ).pack(pady=(0, 16))
 
@@ -36,12 +36,12 @@ class ExportImportDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             export_frame,
-            text="همه phrase ها رو در یک فایل JSON ذخیره می‌کنه.",
+            text="Saves all phrases in a JSON file.",
             text_color="gray", font=AppFonts.regular(12)
         ).pack(anchor="e", padx=12)
 
         ctk.CTkButton(
-            export_frame, text="انتخاب مسیر و Export",
+            export_frame, text="Select Path and Export",
             font=AppFonts.bold(13), command=self._do_export
         ).pack(anchor="e", padx=12, pady=(6, 10))
 
@@ -57,17 +57,17 @@ class ExportImportDialog(ctk.CTkToplevel):
         self.overwrite_var = ctk.BooleanVar(value=False)
         ctk.CTkCheckBox(
             import_frame,
-            text="داده‌های فعلی پاک بشن (Overwrite)",
+            text="Delete current data (Overwrite)",
             variable=self.overwrite_var,
             font=AppFonts.regular(12)
         ).pack(anchor="e", padx=12)
 
         ctk.CTkButton(
-            import_frame, text="انتخاب فایل و Import",
+            import_frame, text="Select File and Import",
             font=AppFonts.bold(13), command=self._do_import
         ).pack(anchor="e", padx=12, pady=(6, 10))
 
-        # ─── وضعیت ────────────────────────────────────────
+        # ─── Status ────────────────────────────────────────
         self.status_label = ctk.CTkLabel(
             self, text="", text_color="gray",
             font=AppFonts.regular(12), wraplength=380
@@ -80,43 +80,42 @@ class ExportImportDialog(ctk.CTkToplevel):
         path = filedialog.asksaveasfilename(
             defaultextension=".json",
             filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
-            title="ذخیره فایل Export"
+            title="Save Export File"
         )
         if not path:
             return
         try:
             count = self.db.export_to_json(path)
-            self._set_status(f"✅ {count} phrase با موفقیت export شد.", "green")
+            self._set_status(f"✅ {count} phrases exported successfully.", "green")
         except Exception as e:
-            self._set_status(f"❌ خطا: {e}", "#e74c3c")
+            self._set_status(f"❌ Error: {e}", "#e74c3c")
 
     def _do_import(self):
         path = filedialog.askopenfilename(
             filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
-            title="انتخاب فایل Import"
+            title="Select Import File"
         )
         if not path:
             return
 
         if self.overwrite_var.get():
             if not messagebox.askyesno(
-                "تأیید", "همه داده‌های فعلی پاک میشن. ادامه میدی؟"
+                "Confirm", "All current data will be deleted. Continue?"
             ):
                 return
 
         try:
             result = self.db.import_from_json(path, overwrite=self.overwrite_var.get())
-            msg = f"✅ {result['imported']} وارد شد"
+            msg = f"✅ {result['imported']} imported"
             if result["skipped"]:
-                msg += f" | ⚠️ {result['skipped']} رد شد"
+                msg += f" | ⚠️ {result['skipped']} skipped"
             if result["errors"]:
-                msg += f" | ❌ {len(result['errors'])} خطا"
+                msg += f" | ❌ {len(result['errors'])} errors"
             self._set_status(msg, "green")
             if self.on_done:
                 self.on_done()
         except Exception as e:
-            self._set_status(f"❌ خطا در خواندن فایل: {e}", "#e74c3c")
+            self._set_status(f"❌ Error reading file: {e}", "#e74c3c")
 
     def _set_status(self, text: str, color: str):
-        self.status_label.configure(text=text, text_color=color)
-
+        self.statu
