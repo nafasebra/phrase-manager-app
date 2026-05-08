@@ -156,14 +156,9 @@ class MainWindow(ctk.CTk):
 
     # ─── Actions ─────────────────────────────────────────
 
-    def _select_category(self, cat):
-        self.selected_cat = cat
-        self._refresh()
-
     def _refresh(self):
-        cat = getattr(self, "selected_cat", "All")
         search = self.search_var.get()
-        phrases = self.db.get_all(category=cat, search=search)
+        phrases = self.db.get_all(category=None, search=search)
 
         self._build_phrase_cards(phrases)
         self.status_label.configure(text=f"{len(phrases)} phrase")
@@ -193,17 +188,6 @@ class MainWindow(ctk.CTk):
 
         if dialog.get_input() == "DELETE":
             self.db.delete_phrase(phrase.id)
-            self._refresh()
-
-    def _add_category(self):
-        dialog = ctk.CTkInputDialog(
-            text="New category name:",
-            title="New Category"
-        )
-
-        name = dialog.get_input()
-        if name and name.strip():
-            self.db.add_category(name.strip())
             self._refresh()
 
     def _open_export_import(self):

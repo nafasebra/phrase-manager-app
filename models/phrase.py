@@ -7,7 +7,7 @@ class Phrase:
     title: str
     content: str
     category: str
-    tags: str          # با کاما جدا میشه
+    tags: str        
     created_at: str
     updated_at: str
 
@@ -18,7 +18,7 @@ class Phrase:
             id=None,
             title="",
             content="",
-            category="عمومی",
+            category="all",
             tags="",
             created_at=now,
             updated_at=now

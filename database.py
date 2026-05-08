@@ -18,7 +18,7 @@ class Database:
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
                 title       TEXT NOT NULL,
                 content     TEXT NOT NULL,
-                category    TEXT DEFAULT 'عمومی',
+                category    TEXT DEFAULT 'all',
                 tags        TEXT DEFAULT '',
                 created_at  TEXT,
                 updated_at  TEXT
@@ -30,8 +30,7 @@ class Database:
                 name TEXT UNIQUE NOT NULL
             )
         """)
-        # دسته‌بندی‌های پیش‌فرض
-        defaults = [("عمومی",), ("کاری",), ("شخصی",), ("برنامه‌نویسی",)]
+        defaults = [("all",), ("a1",), ("a2",), ("b1",), ("b2", ), ("c1",), ("c2", )]
         self.conn.executemany(
             "INSERT OR IGNORE INTO categories (name) VALUES (?)", defaults
         )
@@ -93,10 +92,7 @@ class Database:
         self.conn.commit()
 
 
-    # در انتهای کلاس Database، قبل از close()
-
     def export_to_json(self, path: str) -> int:
-        """همه phrase ها رو به JSON export می‌کنه. تعداد export شده رو برمی‌گردونه."""
         import json
         phrases = self.get_all()
         data = {
@@ -119,18 +115,12 @@ class Database:
         return len(phrases)
 
     def import_from_json(self, path: str, overwrite: bool = False) -> dict:
-        """
-        از JSON import می‌کنه.
-        overwrite=True → همه داده‌های فعلی پاک میشن.
-        برمی‌گردونه: {"imported": int, "skipped": int, "errors": list[str]}
-        """
         import json
         result = {"imported": 0, "skipped": 0, "errors": []}
 
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # پشتیبانی از هر دو فرمت: لیست مستقیم یا آبجکت با کلید phrases
         items = data if isinstance(data, list) else data.get("phrases", [])
 
         if overwrite:
@@ -143,8 +133,7 @@ class Database:
                     result["skipped"] += 1
                     continue
 
-                # دسته‌بندی رو اگه وجود نداشت اضافه کن
-                cat = item.get("category", "عمومی")
+                cat = item.get("category", "all")
                 self.add_category(cat)
 
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -162,7 +151,7 @@ class Database:
                 )
                 result["imported"] += 1
             except Exception as e:
-                result["errors"].append(f"ردیف {i+1}: {e}")
+                result["errors"].append(f"row {i+1}: {e}")
 
         self.conn.commit()
         return result

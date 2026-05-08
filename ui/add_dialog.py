@@ -72,7 +72,7 @@ class PhraseDialog(ctk.CTkToplevel):
         self.phrase.category = self.combo_cat.get()
         self.phrase.tags     = self.entry_tags.get().strip()
 
-        if self.phrase.id:
+        if self.phrase.id is not None and self.phrase.id > 0:
             self.db.update_phrase(self.phrase)
         else:
             self.db.add_phrase(self.phrase)
