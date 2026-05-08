@@ -26,20 +26,20 @@ class PhraseDialog(ctk.CTkToplevel):
         scroll = ctk.CTkScrollableFrame(self)
         scroll.pack(fill="both", expand=True)
 
-        ctk.CTkLabel(scroll, text="Title:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Title:", font=AppFonts.get(13)).pack(anchor="w", **pad)
         self.entry_title = ctk.CTkEntry(scroll, width=440, placeholder_text="Phrase title...", font=AppFonts.get(13))
         self.entry_title.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="Category:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Category:", font=AppFonts.get(13)).pack(anchor="w", **pad)
         categories = [c for c in self.db.get_categories() if c != "All"]
         self.combo_cat = ctk.CTkComboBox(scroll, values=categories, width=440, font=AppFonts.get(13))
         self.combo_cat.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="Tags (comma separated):", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Tags (comma separated):", font=AppFonts.get(13)).pack(anchor="w", **pad)
         self.entry_tags = ctk.CTkEntry(scroll, width=440, placeholder_text="python, snippet, ...", font=AppFonts.get(13))
         self.entry_tags.pack(**pad)
 
-        ctk.CTkLabel(scroll, text="Content:", font=AppFonts.get(13)).pack(anchor="e", **pad)
+        ctk.CTkLabel(scroll, text="Content:", font=AppFonts.get(13)).pack(anchor="w", **pad)
         self.text_content = ctk.CTkTextbox(scroll, width=440, height=150, font=AppFonts.get(13))
         self.text_content.pack(**pad)
 
